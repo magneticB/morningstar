@@ -62,11 +62,11 @@ class Morningstar:
         page_rating = dom.xpath('//*[@class="snapshotTitleBox"]/span/@class')
 
         output['Stars'] = None # Not all have ratings
-        if len(page_rating) > 1:
+        if len(page_rating) == 0:
             console.log('Error!  Could not extract overview data (rating) correctly for id \'' + id + '\'',
                         log_locals=True)
             return
-        elif len(page_rating) == 1:  # rating found
+        elif len(page_rating) == 2:  # rating found
             stars = re.split('stars([0-9])', page_rating[0])
             output['Stars'] = int(stars[1])
 
