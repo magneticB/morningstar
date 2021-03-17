@@ -11,6 +11,7 @@ import csv
 
 FILENAME = "Investments - Sheet1"
 
+
 class CSVAdaptor:
 
     def read_csv_and_update(self):

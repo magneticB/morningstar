@@ -1,6 +1,9 @@
 import requests
 from lxml import html
 import re
+from rich.console import Console
+
+console = Console()
 
 
 class Morningstar:
@@ -20,10 +23,10 @@ class Morningstar:
 
         if found != None:
             id_match = re.split('\{"i":"([A-Za-z0-9]+)"', found)
-            print('Successfully found id \'' + id_match[1] + '\' for ticker \'' + ticker + '\'')
+            console.log('Successfully found id \'' + id_match[1] + '\' for ticker \'' + ticker + '\'')
             return id_match[1]
         else:
-            print('Error!  Did not find result for ticker search ' + ticker)
+            console.log('Error!  Did not find result for ticker search ' + ticker, log_locals=True)
 
 
     def get_overview_by_id(self, id):
@@ -32,7 +35,7 @@ class Morningstar:
 
         response = requests.get('https://www.morningstar.co.uk/uk/etf/snapshot/snapshot.aspx?id=' + id
                                 + '&InvestmentType=FE')
-        print('Successfully found overview data for \'' + id + '\' attempting to parse..')
+        console.log('Successfully found overview data for \'' + id + '\' attempting to parse..')
 
         dom = html.fromstring(response.content, parser = html.HTMLParser(encoding='utf-8'))
 
@@ -40,7 +43,8 @@ class Morningstar:
         page_header = dom.xpath('//*[@class="snapshotTitleBox"]/h1/text()')
 
         if len(page_header) != 1:
-            print('Error!  Could not extract overview data (name) correctly for id \'' + id + '\'')
+            console.log('Error!  Could not extract overview data (name) correctly for id \'' + id + '\'',
+                        log_locals=True)
             return
         page_header_components = page_header[0].split('\n')
         output['Name'] = page_header_components[0]
@@ -49,7 +53,8 @@ class Morningstar:
         page_charge = dom.xpath('//*[@id="overviewQuickstatsDiv"]/table//tr[10]/td[3]/text()')
 
         if len(page_charge) != 1:
-            print('Error!  Could not extract overview data (charge) correctly for id \'' + id + '\'')
+            console.log('Error!  Could not extract overview data (charge) correctly for id \'' + id + '\'',
+                        log_locals=True)
             return
         output['Charge'] = page_charge[0].replace('%', '')
 
@@ -58,7 +63,8 @@ class Morningstar:
 
         output['Stars'] = None # Not all have ratings
         if len(page_rating) > 1:
-            print('Error!  Could not extract overview data (rating) correctly for id \'' + id + '\'')
+            console.log('Error!  Could not extract overview data (rating) correctly for id \'' + id + '\'',
+                        log_locals=True)
             return
         elif len(page_rating) == 1:  # rating found
             stars = re.split('stars([0-9])', page_rating[0])
@@ -68,7 +74,8 @@ class Morningstar:
         page_category = dom.xpath('//*[@id="overviewCalenderYearReturnsDiv"]/table//tr[6]/td/span[2]/text()')
 
         if len(page_category) != 1:
-            print('Error!  Could not extract overview data (category) correctly for id \'' + id + '\'')
+            console.log('Error!  Could not extract overview data (category) correctly for id \'' + id + '\'',
+                        log_locals=True)
             return
         output['Category'] = page_category[0]
 
@@ -76,7 +83,8 @@ class Morningstar:
         page_price = dom.xpath('//*[@id="overviewQuickstatsDiv"]/table//tr[2]/td[3]/text()')
 
         if len(page_price) != 1:
-            print('Error!  Could not extract overview data (price) correctly for id \'' + id + '\'')
+            console.log('Error!  Could not extract overview data (price) correctly for id \'' + id + '\'',
+                        log_locals=True)
             return
         output['Price'] = self.parse_price(page_price[0])
 
@@ -85,7 +93,7 @@ class Morningstar:
     def get_performance_by_id(self, id):
 
         response = requests.get('https://www.morningstar.co.uk/uk/etf/snapshot/snapshot.aspx?id=' + id + '&tab=1')
-        print('Successfully found performance data for \'' + id + '\' attempting to parse..')
+        console.log('Successfully found performance data for \'' + id + '\' attempting to parse..')
 
         dom = html.fromstring(response.content)
         performance_labels = dom.xpath('//*[@id="returnsTrailingDiv"]/table//tr/td[1]/text()')
@@ -101,7 +109,7 @@ class Morningstar:
         if split_price[0] == 'GBX':
             return float(split_price[1])
         else:
-            print('Error unrecognized currency while parsing price!')
+            console.log('Error unrecognized currency while parsing price!', log_locals=True)
             return split_price[1]
 
 
