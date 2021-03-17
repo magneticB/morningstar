@@ -17,6 +17,9 @@ class Morningstar:
 
         for result in search_results:
             segments = result.split('|')
+            if len(segments) < 5:
+                console.log('Error!  Unexpected results for ticker ' + ticker, log_locals=True)
+                return
             if segments[3].lower() == ticker.lower() and segments[4].lower() == 'lse':
                 found = segments[1]
                 break
