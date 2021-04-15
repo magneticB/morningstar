@@ -8,9 +8,9 @@ console = Console()
 ACTIVE_FIELDS = ['Name', 'Charge', 'Morningstar Rating', 'Category', 'Price', 'URL', '3 Months', '6 Months', '1 Year',
                  '3 Years', '5 Years', '10 Years']
 
-class CSVAdaptor:
+class GspreadAdaptor:
 
-    def read_csv_and_update(self):
+    def read_gsheet_and_update(self):
 
         console.log('Attempting to login..')
         gc = gspread.oauth()
@@ -89,6 +89,6 @@ class CSVAdaptor:
         return row
     
 if __name__ == '__main__':
-    a = CSVAdaptor()
-    a.read_csv_and_update()
+    a = GspreadAdaptor()
+    a.read_gsheet_and_update()
 
