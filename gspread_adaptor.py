@@ -7,6 +7,7 @@ from rich.console import Console
 console = Console()
 ACTIVE_FIELDS = ['Name', 'Charge', 'Morningstar Rating', 'Category', 'Price', 'URL', '3 Months', '6 Months', '1 Year',
                  '3 Years', '5 Years', '10 Years']
+SHEET_NAME = 'Investments'
 
 class GspreadAdaptor:
 
@@ -16,20 +17,16 @@ class GspreadAdaptor:
         gc = gspread.oauth()
         console.log('Successful login')
 
-        sh = gc.open('Investments')
-        ws = sh.get_worksheet(0)
+        sh = gc.open(SHEET_NAME)
+        ws = sh.get_worksheet(0)  # use first worksheet
         console.log('Found worksheet')
 
         header = ws.row_values(1)
+        col_lookup = self.get_col_to_a1(header)
+        df = pd.DataFrame(ws.get_all_records())
+        df = df.reindex(columns=header)  # reorder dataframe so order is same as gsheet
 
         ms = Morningstar()
-
-        df = pd.DataFrame(ws.get_all_records())
-
-        df = df.reindex(columns=header)
-
-        col_lookup = self.get_col_to_a1(header)
-
         console.log('Calling Morningstar..')
         df = df.apply(self.lookup_morningstar, ms=ms, axis=1)
 
@@ -46,14 +43,14 @@ class GspreadAdaptor:
     def col_to_list_of_list(self, col_values):
         list_of_list = []
         for i in col_values:
-            temp = []
-            temp.append(i)
-            list_of_list.append(temp)
+            internal_list = []
+            internal_list.append(i)
+            list_of_list.append(internal_list)
         return list_of_list
 
     def get_col_to_a1(self, header):
         cols = []
-        for x in range(0,51):
+        for x in range(0,51):  # supports 52 columns max
             if x < 26:
                 cols.append(string.ascii_uppercase[x])
             else:
