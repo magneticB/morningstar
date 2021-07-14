@@ -9,6 +9,8 @@ ACTIVE_FIELDS = ['Name', 'Charge', 'Morningstar Rating', 'Category', 'Price', 'U
                  '3 Years', '5 Years', '10 Years']
 SHEET_NAME = 'Investments'
 
+# For Auth issues read this: https://docs.gspread.org/en/v3.7.0/oauth2.html#for-end-users-using-oauth-client-id
+
 class GspreadAdaptor:
 
     def read_gsheet_and_update(self):
