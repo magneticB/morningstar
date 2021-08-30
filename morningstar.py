@@ -53,7 +53,8 @@ class Morningstar:
         output['Name'] = page_header_components[0]
 
         # Charge
-        page_charge = dom.xpath('//*[@id="overviewQuickstatsDiv"]/table//td[starts-with(text(), "Ongoing Charge")]/../td[3]/text()')
+        page_charge = dom.xpath('//*[@id="overviewQuickstatsDiv"]/table//td[starts-with(text(), "Ongoing '
+                                'Charge")]/../td[3]/text()')
 
         if len(page_charge) != 1:
             console.log('Error!  Could not extract overview data (charge) correctly for id \'' + id + '\'',
