@@ -104,7 +104,7 @@ class GspreadAdaptor:
             ms_overview = ms_us.get_overview_by_id(ms_id)
             ms_performance = ms_us.get_performance_by_id(ms_id)
 
-            #row['URL'] = ms_us.get_external_url(ms_id)
+            row['URL'] = MorningstarUS.URL_ROOT + ms_id.url + '/quote'
             row['Name'] = ms_overview['Name']
             row['Charge'] = ms_overview['Charge']
             row['Morningstar Rating'] = ms_overview['Stars']
