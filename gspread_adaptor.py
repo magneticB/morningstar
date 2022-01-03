@@ -111,11 +111,31 @@ class GspreadAdaptor:
             row['Category'] = ms_overview['Category']
             row['Price'] = ms_overview['Price']
             row['3 Months'] = ms_performance['3Month']
-            #row['6 Months'] = ms_performance['6 Months']
+            # row['6 Months'] = ms_performance['6 Months']
             row['1 Year'] = ms_performance['1Year']
             row['3 Years'] = ms_performance['3Year']
             row['5 Years'] = ms_performance['5Year']
             row['10 Years'] = ms_performance['10Year']
+
+        # For 529s use override ticker for growth numbers only
+        # Name and pricing information is entered manually
+        if (row['Exchange'] == '529 Plan'):
+            override = row['Override Ticker']
+
+            if override:
+                ms_id = ms_us.get_morningstar_id_by_ticker(override)
+                ms_overview = ms_us.get_overview_by_id(ms_id)
+                ms_performance = ms_us.get_performance_by_id(ms_id)
+                row['URL'] = MorningstarUS.URL_ROOT + ms_id.url + '/quote'
+                row['Charge'] = ms_overview['Charge']
+                row['Morningstar Rating'] = ms_overview['Stars']
+                row['Category'] = ms_overview['Category']
+                row['3 Months'] = ms_performance['3Month']
+                row['1 Year'] = ms_performance['1Year']
+                row['3 Years'] = ms_performance['3Year']
+                row['5 Years'] = ms_performance['5Year']
+                row['10 Years'] = ms_performance['10Year']
+
         return row
     
 if __name__ == '__main__':
