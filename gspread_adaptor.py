@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 import gspread
 import string
@@ -65,6 +67,9 @@ class GspreadAdaptor:
         return dict(zip(header, cols))
 
     def lookup_morningstar(self, row):
+
+        # Rate limit!
+        time.sleep(2)
 
         ms_uk = GspreadAdaptor.ms_uk
         ms_us = GspreadAdaptor.ms_us

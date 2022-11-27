@@ -10,16 +10,19 @@ class Morningstar:
 
     def get_morningstar_id_by_ticker(self, ticker):
         ticker = ticker.strip() # remove white space for better matching
-        response = requests.get('https://www.morningstar.co.uk/uk/util/SecuritySearch.ashx?q=' + ticker + '%20lse')
+        #response = requests.get('https://www.morningstar.co.uk/uk/util/SecuritySearch.ashx?q=' + ticker + '%20lse')
+
+        request_headers = {'x-requested-with': 'XMLHttpRequest'}
+        post_data = {'q': ticker, 'limit': '100', 'timestamp': '1667155008782', 'preferedList': ''}
+
+        response = requests.post('https://www.morningstar.co.uk/uk/util/SecuritySearch.ashx', headers=request_headers,
+                                 data=post_data)
 
         search_results = str(response.content).split('\\r\\n')
         found = None
 
         for result in search_results:
             segments = result.split('|')
-            if len(segments) < 5:
-                console.log('Error!  Unexpected results for ticker ' + ticker, log_locals=True)
-                return
             if segments[3].lower() == ticker.lower() and segments[4].lower() == 'lse':
                 found = segments[1]
                 break
@@ -121,6 +124,8 @@ if __name__ == '__main__':
 
     m = Morningstar()
     # print(m.get_perfromance_by_ticker('VUSA'))
+    morningstar_id = m.get_morningstar_id_by_ticker('ISF')
+    print(m.get_overview_by_id(morningstar_id))
     morningstar_id = m.get_morningstar_id_by_ticker('VUAG')
     print(m.get_overview_by_id(morningstar_id))
     # morningstar_id = get_morningstar_id_by_ticker('VUAG')

@@ -1,4 +1,5 @@
 import json
+import time
 
 import requests
 from lxml import html
@@ -16,6 +17,7 @@ class MorningstarUS:
     headers = {
         'x-api-key': 'Nrc2ElgzRkaTE43D5vA7mrWj2WpSBR35fvmaqfte',
         'ApiKey': 'lstzFDEOhfFNMLikKa0am9mgEKLBl49T',
+        #'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
     }
 
     def get_morningstar_id_by_ticker(self, ticker):
@@ -70,7 +72,11 @@ class MorningstarUS:
         output = {}
 
         response = requests.get(MorningstarUS.URL_ROOT + id.url + '/quote')
-        console.log('Successfully found overview data for \'' + id.ticker + '\' attempting to parse..')
+
+        if (response.status_code == 200):
+            console.log('Successfully found overview data for \'' + id.ticker + '\' attempting to parse..')
+        else:
+            console.log('Error expected 200 response code for \'' + id.ticker + '\'')
 
         # Find API Id in source of page
         self.find_data_api_id(response.content, id)
@@ -97,15 +103,15 @@ class MorningstarUS:
         output['Charge'] = page_charge[0]
 
         # Rating
-        page_rating = dom.xpath('//*[@class="mdc-security-header__star-rating"]/@aria-label')
+        page_rating = dom.xpath('//*[@class="mdc-security-header__star-rating"]/svg')
 
         output['Stars'] = None # Not all have ratings
         if len(page_rating) == 0:
             console.log('Error!  Could not extract overview data (rating) correctly for id \'' + id.ticker + '\'',
                         log_locals=True)
             return
-        elif len(page_rating) == 1:  # rating found
-            output['Stars'] = int(page_rating[0][:1])
+        else:  # rating found
+            output['Stars'] = int(len(page_rating))
 
         # Category
         page_category = dom.xpath('//div/span[text() = "Category"]/../../div/span/text()')
@@ -159,8 +165,13 @@ class MorningstarUS:
 
 # m = MorningstarUS()
 # # print(m.get_perfromance_by_ticker('VUSA'))
-# morningstar_id = m.get_morningstar_id_by_ticker('NMPAX')
-# print(m.get_overview_by_id(morningstar_id))
+# morningstar_id = m.get_morningstar_id_by_ticker('VIGIX')
+# for i in range(1, 50):
+#     print(m.get_overview_by_id(morningstar_id))
+#     print(i)
+#     time.sleep(1)
+
+
 # m.get_performance_by_id(morningstar_id)
 # morningstar_id = m.get_morningstar_id_by_ticker('VMFXX')
 # print(m.get_overview_by_id(morningstar_id))
